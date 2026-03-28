@@ -1,12 +1,13 @@
 from ursina import *
 from ursina.prefabs.first_person_controller import FirstPersonController
 import random
+import math
 
 # Инициализация приложения
 app = Ursina(borderless=False, fullscreen=False)
 
 # Настройки окна
-window.title = 'CS:GO - Mirage Clone'
+window.title = 'PS:GO - Mirage Clone'
 window.size = (1920, 1080)
 window.fullscreen = False
 window.exit_button.visible = False
@@ -24,7 +25,6 @@ reloading = False
 enemies_killed = 0
 can_shoot = True
 game_active = True
-spawn_protection = True
 
 # Словарь оружия
 weapons = {
@@ -65,29 +65,23 @@ buy_menu = None
 class MirageMap:
     def __init__(self):
         # Пол (песок)
-        self.ground = Entity(model='plane', texture='sand', scale=(100, 1, 100), 
-                            position=(0, -1, 0), collider='box', color=color.rgb(210, 180, 140))
+        self.ground = Entity(model='cube', scale=(100, 0.5, 100), 
+                            position=(0, -1, 0), collider='box', 
+                            color=color.rgb(210, 180, 140))
         
         # Стены зданий (песочные цвета)
-        buildings = [
-            # Дом A (A site) - глиняный цвет
-            (Entity(model='cube', color=color.rgb(180, 120, 80), scale=(8, 5, 8), 
-                   position=(-15, 1, -10), collider='box'), color.rgb(180, 120, 80)),
-            # Дом B (B site) - песчаник
-            (Entity(model='cube', color=color.rgb(160, 110, 70), scale=(8, 5, 8), 
-                   position=(15, 1, 10), collider='box'), color.rgb(160, 110, 70)),
-            # Мид (Middle) - светлый песок
-            (Entity(model='cube', color=color.rgb(200, 150, 100), scale=(6, 4, 6), 
-                   position=(0, 0.5, 0), collider='box'), color.rgb(200, 150, 100)),
-            # Подвал (Underpass) - темный песок
-            (Entity(model='cube', color=color.rgb(120, 80, 50), scale=(5, 3, 10), 
-                   position=(-10, -0.5, 15), collider='box'), color.rgb(120, 80, 50)),
-            # Лестница (Stairs) - камень
-            (Entity(model='cube', color=color.rgb(150, 130, 100), scale=(4, 2, 4), 
-                   position=(12, -0.5, -12), collider='box'), color.rgb(150, 130, 100)),
-        ]
+        self.building_a = Entity(model='cube', color=color.rgb(180, 120, 80), 
+                                scale=(8, 5, 8), position=(-15, 1, -10), collider='box')
+        self.building_b = Entity(model='cube', color=color.rgb(160, 110, 70), 
+                                scale=(8, 5, 8), position=(15, 1, 10), collider='box')
+        self.mid_building = Entity(model='cube', color=color.rgb(200, 150, 100), 
+                                  scale=(6, 4, 6), position=(0, 0.5, 0), collider='box')
+        self.underpass = Entity(model='cube', color=color.rgb(120, 80, 50), 
+                               scale=(5, 3, 10), position=(-10, -0.5, 15), collider='box')
+        self.stairs = Entity(model='cube', color=color.rgb(150, 130, 100), 
+                            scale=(4, 2, 4), position=(12, -0.5, -12), collider='box')
         
-        # Ящики для укрытий (деревянные в песочных тонах)
+        # Ящики для укрытий
         boxes_positions = [
             (5, -0.5, 5), (-5, -0.5, 5), (5, -0.5, -5), (-5, -0.5, -5),
             (3, -0.5, -3), (-3, -0.5, 3), (8, -0.5, -8), (-8, -0.5, 8),
@@ -97,32 +91,31 @@ class MirageMap:
         
         self.boxes = []
         for pos in boxes_positions:
-            box = Entity(model='cube', color=color.rgb(139, 90, 43), texture='wood', 
+            box = Entity(model='cube', color=color.rgb(139, 90, 43), 
                         scale=(1.5, 1, 1.5), position=pos, collider='box')
             self.boxes.append(box)
         
-        # Столбы (каменные)
-        pillars = [
+        # Столбы
+        pillars_positions = [
             (-5, 0, -5), (5, 0, -5), (-5, 0, 5), (5, 0, 5),
             (-10, 0, -10), (10, 0, -10), (-10, 0, 10), (10, 0, 10)
         ]
         
         self.pillars = []
-        for pos in pillars:
-            pillar = Entity(model='cylinder', color=color.rgb(140, 120, 90), scale=(0.5, 3, 0.5), 
-                          position=pos, collider='box')
+        for pos in pillars_positions:
+            pillar = Entity(model='cylinder', color=color.rgb(140, 120, 90), 
+                          scale=(0.5, 3, 0.5), position=pos, collider='box')
             self.pillars.append(pillar)
         
-        # Кактусы вместо деревьев для пустынной тематики
-        self.cacti = []
+        # Кактусы
         cactus_positions = [
             (-18, -1, -18), (18, -1, -18), (-18, -1, 18), (18, -1, 18),
             (-15, -1, -20), (15, -1, -20), (-20, -1, 15), (20, -1, -15),
             (-22, -1, -5), (22, -1, 5), (-5, -1, 22), (5, -1, -22)
         ]
         
+        self.cacti = []
         for pos in cactus_positions:
-            # Создаем кактус из цилиндров
             cactus_body = Entity(model='cylinder', color=color.rgb(60, 80, 40), 
                                 scale=(0.6, 2, 0.6), position=pos, collider='box')
             cactus_arm1 = Entity(model='cylinder', color=color.rgb(60, 80, 40), 
@@ -131,24 +124,23 @@ class MirageMap:
                                 scale=(0.4, 1, 0.4), position=(pos[0]-0.5, pos[1]+0.5, pos[2]), collider='box')
             self.cacti.extend([cactus_body, cactus_arm1, cactus_arm2])
         
-        # Добавляем песочные дюны (небольшие холмы)
-        self.dunes = []
+        # Песочные дюны
         dune_positions = [
             (7, -0.8, 7), (-7, -0.8, 7), (7, -0.8, -7), (-7, -0.8, -7),
             (4, -0.9, 4), (-4, -0.9, 4), (11, -0.7, 11), (-11, -0.7, -11)
         ]
         
+        self.dunes = []
         for pos in dune_positions:
             dune = Entity(model='sphere', color=color.rgb(200, 160, 110), 
-                         scale=(2, 0.3, 2), position=pos, collider='mesh')
+                         scale=(2, 0.3, 2), position=pos)
             self.dunes.append(dune)
 
-# Класс оружия (визуальная модель)
+# Класс оружия
 class WeaponModel(Entity):
     def __init__(self, weapon_type, position=(0.5, -0.5, 0.5)):
         super().__init__(parent=camera, position=position, rotation=(0, 0, 0))
         self.weapon_type = weapon_type
-        self.model = None
         self.create_weapon_model()
         
     def create_weapon_model(self):
@@ -192,12 +184,12 @@ class WeaponModel(Entity):
         self.animate('position', (0.55, -0.55, 0.45), duration=0.05, curve=curve.out_quad)
         self.animate('position', (0.5, -0.5, 0.5), duration=0.1, delay=0.05)
 
-# Класс врага (ярко-красный)
+# Класс врага
 class EnemyBot(Entity):
     def __init__(self, position=(0, 0, 0), weapon_type="AK-47"):
         super().__init__(
             model='cube',
-            color=color.rgb(220, 20, 20),  # Ярко-красный цвет
+            color=color.rgb(220, 20, 20),
             scale=(0.8, 1.8, 0.8),
             position=position,
             collider='box'
@@ -209,15 +201,10 @@ class EnemyBot(Entity):
         self.weapon = weapon_type
         self.shoot_cooldown = random.uniform(0.5, 1.5)
         self.attack_range = weapons[weapon_type]["range"]
-        self.spawn_time = time.time()
         
-        # Добавляем визуальное оружие для бота (темное)
+        # Визуальное оружие для бота
         self.weapon_model = Entity(model='cube', color=color.rgb(80, 80, 80),
                                    scale=(0.3, 0.2, 0.8), position=(0.5, 0.5, 0.5), parent=self)
-        
-        # Добавляем красный световой эффект вокруг врага
-        self.glow = Entity(model='sphere', color=color.rgba(220, 20, 20, 100), 
-                          scale=(1.2, 1.5, 1.2), parent=self)
         
         # Патрулирование
         self.patrol_points = []
@@ -225,20 +212,16 @@ class EnemyBot(Entity):
         self.create_patrol_path()
         
     def create_patrol_path(self):
+        # Исправлено: теперь кортежи с 3 значениями
         patrol_areas = [
             (-12, 0, -8), (-5, 0, -5), (0, 0, 0), (8, 0, 5), (12, 0, 8),
             (8, 0, -5), (-8, 0, 5), (-12, 0, 8), (12, 0, -8)
         ]
-        self.patrol_points = [Vec3(x, 0, z) for x, z in [(p[0], p[2]) for p in patrol_areas]]
+        self.patrol_points = [Vec3(x, y, z) for x, y, z in patrol_areas]
         
     def update(self):
         if self.health <= 0 or not game_active:
             return
-            
-        # Анимация свечения врага
-        self.glow.scale = (1.2 + math.sin(time.time() * 5) * 0.1, 
-                          1.5 + math.sin(time.time() * 5) * 0.1, 
-                          1.2 + math.sin(time.time() * 5) * 0.1)
         
         # Поиск игрока
         player_distance = distance(self.position, player.position)
@@ -266,17 +249,16 @@ class EnemyBot(Entity):
         else:
             self.patrol_behavior()
         
-        # Ограничение движения в пределах карты
+        # Ограничение движения
         self.x = max(-22, min(22, self.x))
         self.z = max(-22, min(22, self.z))
         self.y = 0
         
-        # Обновление цвета в зависимости от здоровья (оттенки красного)
+        # Обновление цвета
         if self.health > 0:
             health_percent = self.health / self.max_health
             red_intensity = 100 + (120 * health_percent)
             self.color = color.rgb(red_intensity, 20, 20)
-            self.glow.color = color.rgba(red_intensity, 20, 20, 100)
     
     def patrol_behavior(self):
         if self.current_target is None or distance(self.position, self.current_target) < 1:
@@ -291,7 +273,6 @@ class EnemyBot(Entity):
         if not game_active or player.spawn_protection_active:
             return
             
-        # Расчет урона
         distance_factor = max(0.5, 1 - (distance(self.position, player.position) / self.attack_range))
         damage = self.damage * distance_factor
         
@@ -322,7 +303,7 @@ class EnemyBot(Entity):
     
     def die(self):
         global score, enemies_killed, money
-        # Эффект взрыва при смерти
+        # Эффект взрыва
         explosion = Entity(model='sphere', color=color.orange, scale=0.5, position=self.position)
         explosion.animate_scale(2, duration=0.3)
         destroy(explosion, delay=0.3)
@@ -335,7 +316,6 @@ class EnemyBot(Entity):
         if self in enemies:
             enemies.remove(self)
         
-        # Создать нового врага
         invoke(spawn_enemy, delay=3)
 
 # Игрок
@@ -466,7 +446,7 @@ def buy_weapon(weapon_name):
 
 # Функции стрельбы
 def shoot():
-    global ammo, reloading, can_shoot, health, game_active, score
+    global ammo, reloading, can_shoot, game_active, score
     
     if not game_active or reloading or not can_shoot:
         return
@@ -554,10 +534,11 @@ mirage_map = MirageMap()
 
 # Добавляем свет и небо
 Sky()
-# Добавляем песочный туман для атмосферы
+# Добавляем туман
 scene.fog_color = color.rgb(210, 180, 140)
 scene.fog_density = 0.02
 
+# Свет с теплым оттенком
 DirectionalLight(shadows=True, intensity=1.5, color=color.rgb(255, 240, 200))
 
 # Создание врагов в начале
