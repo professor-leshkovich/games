@@ -4,12 +4,12 @@ import random
 import math
 
 # Инициализация приложения
-app = Ursina(borderless=False, fullscreen=False)
+app = Ursina(borderless=False, fullscreen=True)
 
 # Настройки окна
 window.title = 'PS:GO - Mirage Clone'
 window.size = (1920, 1080)
-window.fullscreen = False
+window.fullscreen = True
 window.exit_button.visible = False
 window.fps_counter.enabled = True
 
@@ -38,22 +38,22 @@ weapons = {
 # Создание интерфейса
 def update_ui():
     if game_active:
-        health_text.text = f'❤️ {int(health)}'
-        money_text.text = f'💰 {money}$'
+        health_text.text = f' {int(health)}'
+        money_text.text = f' {money}$'
         ammo_text.text = f'{ammo} / {max_ammo}'
-        weapon_text.text = f'🔫 {current_weapon}'
-        score_text.text = f'🎯 Score: {score}'
-        kill_text.text = f'💀 Kills: {enemies_killed}'
+        weapon_text.text = f' {current_weapon}'
+        score_text.text = f' Score: {score}'
+        kill_text.text = f' Kills: {enemies_killed}'
 
-health_text = Text(text=f'❤️ {health}', position=(-0.85, 0.48), scale=2, color=color.red)
-money_text = Text(text=f'💰 {money}$', position=(-0.85, 0.43), scale=2, color=color.green)
+health_text = Text(text=f' {health}', position=(-0.85, 0.48), scale=2, color=color.red)
+money_text = Text(text=f' {money}$', position=(-0.85, 0.43), scale=2, color=color.green)
 ammo_text = Text(text=f'{ammo} / {max_ammo}', position=(-0.85, 0.38), scale=2, color=color.white)
-weapon_text = Text(text=f'🔫 {current_weapon}', position=(-0.85, 0.33), scale=2, color=color.orange)
-score_text = Text(text=f'🎯 Score: {score}', position=(-0.85, 0.28), scale=2, color=color.white)
-kill_text = Text(text=f'💀 Kills: {enemies_killed}', position=(-0.85, 0.23), scale=2, color=color.white)
+weapon_text = Text(text=f' {current_weapon}', position=(-0.85, 0.33), scale=2, color=color.orange)
+score_text = Text(text=f' Score: {score}', position=(-0.85, 0.28), scale=2, color=color.white)
+kill_text = Text(text=f' Kills: {enemies_killed}', position=(-0.85, 0.23), scale=2, color=color.white)
 
 # Текст защиты при спавне
-protection_text = Text(text='🛡️ SPAWN PROTECTION', position=(0, 0.4), scale=2, color=color.yellow, origin=(0, 0))
+protection_text = Text(text='SPAWN PROTECTION', position=(0, 0.4), scale=2, color=color.yellow, origin=(0, 0))
 protection_text.enabled = True
 invoke(lambda: setattr(protection_text, 'enabled', False), delay=3)
 
@@ -339,7 +339,7 @@ class Player(FirstPersonController):
             protection_text.enabled = False
             
         if game_active:
-            health_text.text = f'❤️ {int(self.health)}'
+            health_text.text = f'{int(self.health)}'
     
     def die(self):
         global game_active, health
