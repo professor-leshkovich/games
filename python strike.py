@@ -67,18 +67,18 @@ class MirageMap:
         # Пол (песок)
         self.ground = Entity(model='cube', scale=(100, 0.5, 100), 
                             position=(0, -1, 0), collider='box', 
-                            color=color.rgb(210, 180, 140))
+                            color=color.random_color())
         
         # Стены зданий (песочные цвета)
-        self.building_a = Entity(model='cube', color=color.rgb(180, 120, 80), 
+        self.building_a = Entity(model='cube', color=color.yellow, 
                                 scale=(8, 5, 8), position=(-15, 1, -10), collider='box')
-        self.building_b = Entity(model='cube', color=color.rgb(160, 110, 70), 
+        self.building_b = Entity(model='cube', color=color.yellow, 
                                 scale=(8, 5, 8), position=(15, 1, 10), collider='box')
-        self.mid_building = Entity(model='cube', color=color.rgb(200, 150, 100), 
+        self.mid_building = Entity(model='cube', color=color.yellow, 
                                   scale=(6, 4, 6), position=(0, 0.5, 0), collider='box')
-        self.underpass = Entity(model='cube', color=color.rgb(120, 80, 50), 
+        self.underpass = Entity(model='cube', color=color.yellow, 
                                scale=(5, 3, 10), position=(-10, -0.5, 15), collider='box')
-        self.stairs = Entity(model='cube', color=color.rgb(150, 130, 100), 
+        self.stairs = Entity(model='cube', color=color.yellow, 
                             scale=(4, 2, 4), position=(12, -0.5, -12), collider='box')
         
         # Ящики для укрытий
@@ -189,7 +189,7 @@ class EnemyBot(Entity):
     def __init__(self, position=(0, 0, 0), weapon_type="AK-47"):
         super().__init__(
             model='cube',
-            color=color.rgb(220, 20, 20),
+            color=color.red,
             scale=(0.8, 1.8, 0.8),
             position=position,
             collider='box'
