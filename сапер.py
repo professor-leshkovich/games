@@ -454,7 +454,8 @@ class Game:
                             self.change_difficulty(btn_id)
                 
                 # Обработка кликов по игровому полю
-                if event.type == pygame.MOUSEBUTTONDOWN and not self.dragging:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
                     # Проверяем, что клик не по кнопкам
                     is_over_button = any(btn.rect.collidepoint(event.pos) for _, btn in self.buttons)
                     
