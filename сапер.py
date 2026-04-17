@@ -90,7 +90,7 @@ class Minesweeper:
         self.reset()
     
     def reset(self):
-        """Сбрасывает игру"""
+        # Сбрасывает игру
         self.board = []
         self.revealed = []
         self.flags = []
@@ -104,7 +104,7 @@ class Minesweeper:
             self.flags.append([False] * self.width)
     
     def place_mines(self, first_x, first_y):
-        """Размещает мины, гарантируя, что первая клетка не будет миной"""
+        # Размещает мины, гарантируя, что первая клетка не будет миной
         mines_placed = 0
         while mines_placed < self.mines:
             x = random.randint(0, self.width - 1)
@@ -134,7 +134,7 @@ class Minesweeper:
                 self.board[y][x] = count
     
     def reveal(self, x, y):
-        """Открывает клетку"""
+        # Открывает клетку
         if self.game_over or self.won:
             return False
         
@@ -179,14 +179,14 @@ class Minesweeper:
         return True
     
     def reveal_all_mines(self):
-        """Открывает все мины при проигрыше"""
+        # Открывает все мины при проигрыше
         for y in range(self.height):
             for x in range(self.width):
                 if self.board[y][x] == -1:
                     self.revealed[y][x] = True
     
     def toggle_flag(self, x, y):
-        """Устанавливает/снимает флажок"""
+        # Устанавливает/снимает флажок
         if self.game_over or self.won:
             return
         
@@ -201,7 +201,7 @@ class Minesweeper:
         self.check_win()
     
     def check_win(self):
-        """Проверяет, выиграл ли игрок"""
+        # Проверяет, выиграл ли игрок
         flagged_mines = 0
         for y in range(self.height):
             for x in range(self.width):
@@ -237,7 +237,7 @@ class Game:
         self.create_buttons()
     
     def init_game(self):
-        """Инициализирует игровое поле"""
+        # Инициализирует игровое поле
         settings = DIFFICULTY_LEVELS[self.current_difficulty]
         self.game = Minesweeper(settings["width"], settings["height"], settings["mines"])
         
@@ -252,7 +252,7 @@ class Game:
         self.scroll_area = pygame.Rect(0, 0, self.window_width, self.window_height - INFO_PANEL_HEIGHT)
     
     def create_buttons(self):
-        """Создает кнопки интерфейса"""
+        # Создает кнопки интерфейса
         self.buttons = []
         
         # Кнопка "Новая игра"
@@ -287,7 +287,7 @@ class Game:
             self.buttons.append((level_name, btn))
     
     def change_difficulty(self, level_name):
-        """Изменяет сложность игры"""
+        # Изменяет сложность игры
         if level_name != self.current_difficulty:
             self.current_difficulty = level_name
             self.init_game()
@@ -300,7 +300,7 @@ class Game:
             self.scroll_y = 0  # Сбрасываем прокрутку
     
     def draw_board(self):
-        """Отрисовывает игровое поле с учетом прокрутки"""
+        # Отрисовывает игровое поле с учетом прокрутки
         for y in range(self.game.height):
             for x in range(self.game.width):
                 rect_x = self.board_offset_x + x * (TILE_SIZE + MARGIN) + MARGIN
@@ -341,7 +341,7 @@ class Game:
                         pygame.draw.polygon(self.screen, COLORS['FLAG'], flag_points)
     
     def draw_info_panel(self):
-        """Отрисовывает информационную панель внизу экрана"""
+        # Отрисовывает информационную панель внизу экрана
         panel_rect = pygame.Rect(0, self.window_height - INFO_PANEL_HEIGHT, 
                                  self.window_width, INFO_PANEL_HEIGHT)
         pygame.draw.rect(self.screen, COLORS['INFO_BG'], panel_rect)
@@ -383,7 +383,7 @@ class Game:
             pygame.draw.rect(self.screen, COLORS['BUTTON'], scroll_thumb_rect)
     
     def handle_click(self, pos):
-        """Обрабатывает клики по игровому полю"""
+        # Обрабатывает клики по игровому полю
         # Проверяем, что клик в области игрового поля
         if pos[1] > self.scroll_area.height:
             return None
@@ -397,7 +397,7 @@ class Game:
         return None
     
     def run(self):
-        """Главный игровой цикл"""
+        # Главный игровой цикл
         running = True
         
         while running:

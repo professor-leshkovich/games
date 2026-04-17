@@ -1,13 +1,11 @@
-"""
-Counter-Strike 2.5D - Улучшенная версия с случайной генерацией карт
-Особенности:
-1. Случайная генерация карт
-2. Боты-террористы
-3. Разное оружие
-4. Покупка оружия
-5. Бомба и её установка
-6. Зоны для команд
-"""
+# Counter-Strike 2.5D - Улучшенная версия с случайной генерацией карт
+# Особенности:
+# 1. Случайная генерация карт
+# 2. Боты-террористы
+# 3. Разное оружие
+# 4. Покупка оружия
+# 5. Бомба и её установка
+# 6. Зоны для команд
 
 import pygame
 import sys
@@ -64,7 +62,7 @@ class Weapon:
         self.size = size  # (width, height)
         
     def draw(self, surface, x, y, scale=1.0):
-        """Рисует 2D модельку оружия"""
+        # 2д моделька оружия
         width, height = self.size
         width = int(width * scale)
         height = int(height * scale)
@@ -83,7 +81,7 @@ class Weapon:
                            (x + width//2 - 3, y + height//2 - 3, 6, height//2 + 3))
             
         elif self.type == WeaponType.PISTOL:
-            # Пистолет Glock-18 - светло-коричневый
+            # глок - светло-коричневый
             # Основа
             pygame.draw.rect(surface, LIGHT_BROWN, (x, y + height//3, width, height//3))
             # Ствол
@@ -96,7 +94,7 @@ class Weapon:
             pygame.draw.rect(surface, (60, 60, 60), (x - width//8, y + height*2//3, width//4, 2))
             
         elif self.type == WeaponType.SHOTGUN:
-            # Дробовик XM1014 - черный
+            # Дробовик - черный
             # Ствол (толстый)
             pygame.draw.rect(surface, BLACK, (x, y, width, height))
             # Затвор
@@ -109,7 +107,7 @@ class Weapon:
             pygame.draw.rect(surface, (50, 50, 50), (x + width//2, y, width//3, height))
             
         elif self.type == WeaponType.RIFLE:
-            # Винтовка AK-47
+            # калаш
             # Ствол
             pygame.draw.rect(surface, (60, 40, 20), (x, y + height//3, width, height//3))
             # Магазин
@@ -124,7 +122,7 @@ class Weapon:
             pygame.draw.rect(surface, (80, 80, 80), (x + width//4, y, width//8, height//4))
             
         elif self.type == WeaponType.SNIPER:
-            # Снайперка AWP - зеленый
+            # авик - зеленый
             # Ствол (очень длинный)
             pygame.draw.rect(surface, DARK_GREEN, (x, y + height//3, width, height//3))
             # Прицел
@@ -297,7 +295,7 @@ class Player:
         return False
         
     def crouch(self):
-        """Присесть/встать"""
+        # Присесть/встать
         self.is_crouching = not self.is_crouching
         if self.is_crouching:
             self.speed = self.crouch_speed
@@ -379,7 +377,7 @@ class Bot(Player):
         self.assign_random_weapon()
         
     def assign_random_weapon(self):
-        """Назначает боту случайное оружие из доступных в магазине"""
+        # Назначает боту случайное оружие из доступных в магазине
         available_weapons = [
             WeaponType.PISTOL,
             WeaponType.SHOTGUN,
@@ -515,7 +513,7 @@ class Bot(Player):
                 self.move(move_x, move_y, game.map)
     
     def shoot_at_player(self, game, target):
-        """Бот стреляет в цель с учетом сложности"""
+        # Бот стреляет в цель с учетом сложности
         if self.current_weapon.ammo > 0:
             self.current_weapon.ammo -= 1
             
@@ -559,7 +557,7 @@ class MapGenerator:
         self.bomb_sites = []
         
     def generate_map(self):
-        """Генерация случайной карты"""
+        # Генерация случайной карты
         # Инициализация сетки
         self.grid = [[1 for _ in range(self.width)] for _ in range(self.height)]
         
@@ -672,7 +670,7 @@ class MapGenerator:
         return False
         
     def check_wall_between(self, x1, y1, x2, y2):
-        """Проверка, есть ли стена между двумя точками"""
+        # Проверка, есть ли стена между двумя точками
         steps = 50
         for i in range(steps):
             x = x1 + (x2 - x1) * i / steps
@@ -682,7 +680,7 @@ class MapGenerator:
         return False
         
     def draw_minimap(self, surface, player_x, player_y):
-        """Отрисовка миникарты"""
+        # Отрисовка миникарты
         map_scale = 5
         map_width = self.width * map_scale
         map_height = self.height * map_scale
@@ -731,16 +729,16 @@ class Game:
         while not valid_map and attempts < 10:
             self.map.generate_map()
             valid_map = len(self.map.ct_spawn) > 0 and len
-"""
-Counter-Strike 2D - Улучшенная версия с случайной генерацией карт
-Особенности:
-1. Случайная генерация карт
-2. Боты-террористы
-3. Разное оружие
-4. Покупка оружия
-5. Бомба и её установка
-6. Зоны для команд
-"""
+
+# Counter-Strike 2D - Улучшенная версия с случайной генерацией карт
+# Особенности:
+# 1. Случайная генерация карт
+# 2. Боты-террористы
+# 3. Разное оружие
+# 4. Покупка оружия
+# 5. Бомба и её установка
+# 6. Зоны для команд
+
 
 import pygame
 import sys
@@ -795,7 +793,7 @@ class Weapon:
         self.size = size  # (width, height)
         
     def draw(self, surface, x, y, scale=1.0):
-        """Рисует 2D модельку оружия"""
+        # Рисует 2D модельку оружия
         width, height = self.size
         width = int(width * scale)
         height = int(height * scale)
@@ -1064,7 +1062,7 @@ class Bot(Player):
         self.assign_random_weapon()
         
     def assign_random_weapon(self):
-        """Назначает боту случайное оружие из доступных в магазине"""
+        # Назначает боту случайное оружие из доступных в магазине
         available_weapons = [
             WeaponType.PISTOL,
             WeaponType.SHOTGUN,
@@ -1190,7 +1188,7 @@ class Bot(Player):
                 self.move(move_x, move_y, game.map)
     
     def shoot_at_player(self, game, target):
-        """Бот стреляет в цель с учетом сложности"""
+        # Бот стреляет в цель с учетом сложности
         if self.current_weapon.ammo > 0:
             self.current_weapon.ammo -= 1
             
@@ -1230,7 +1228,7 @@ class MapGenerator:
         self.bomb_sites = []
         
     def generate_map(self):
-        """Генерация случайной карты"""
+        # Генерация случайной карты
         # Инициализация сетки
         self.grid = [[1 for _ in range(self.width)] for _ in range(self.height)]
         
@@ -1343,7 +1341,7 @@ class MapGenerator:
         return False
         
     def check_wall_between(self, x1, y1, x2, y2):
-        """Проверка, есть ли стена между двумя точками"""
+        # Проверка есть ли стена между двумя точками
         steps = 50
         for i in range(steps):
             x = x1 + (x2 - x1) * i / steps
@@ -1353,7 +1351,7 @@ class MapGenerator:
         return False
         
     def draw_minimap(self, surface, player_x, player_y):
-        """Отрисовка миникарты"""
+        # Отрисовка миникарты
         map_scale = 5
         map_width = self.width * map_scale
         map_height = self.height * map_scale
@@ -1588,7 +1586,6 @@ class Game:
         self.round_winner = None
         
     def draw_raycaster_view(self, surface):
-        """Упрощенный Raycaster для 2.5D вида"""
         # Фон
         surface.fill((100, 150, 200))  # Небо
         pygame.draw.rect(surface, (50, 50, 50),  # Пол
@@ -1676,7 +1673,7 @@ class Game:
                         (WIDTH//2, HEIGHT//2+15), 2)
         
     def draw_hud(self, surface):
-        """Отрисовка HUD"""
+        # Отрисовка HUD
         # Статус игрока
         hp_text = self.font.render(f"HP: {self.player.health}", True, 
                                  GREEN if self.player.health > 50 else RED)
@@ -1774,7 +1771,7 @@ class Game:
             surface.blit(timer_text, (WIDTH//2 - 120, HEIGHT//2 + 50))
         
     def draw_team_select(self, surface):
-        """Отрисовка меню выбора команды"""
+        # команды
         overlay = pygame.Surface((WIDTH, HEIGHT))
         overlay.fill((0, 0, 0))
         overlay.set_alpha(200)
@@ -1805,7 +1802,7 @@ class Game:
         return ct_rect, t_rect
         
     def draw_settings_menu(self, surface):
-        """Отрисовка меню настроек сложности"""
+        # меню и сложность
         overlay = pygame.Surface((WIDTH, HEIGHT))
         overlay.fill((0, 0, 0))
         overlay.set_alpha(200)
@@ -2135,7 +2132,7 @@ class Game:
         sys.exit()
 
 def show_main_menu():
-    """Показывает главное меню с выбором команды и сложности"""
+    # Показывает главное меню с выбором команды и сложности
     menu_font = pygame.font.Font(None, 48)
     title_font = pygame.font.Font(None, 72)
     
