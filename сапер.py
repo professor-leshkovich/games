@@ -18,7 +18,7 @@ DIFFICULTY_LEVELS = {
     "Эксперт": {"width": 20, "height": 16, "mines": 60}
 }
 
-# Цвета (RGB)
+# Цвета
 COLORS = {
     'BACKGROUND': (192, 192, 192),
     'HIDDEN': (128, 128, 128),
@@ -104,7 +104,7 @@ class Minesweeper:
             self.flags.append([False] * self.width)
     
     def place_mines(self, first_x, first_y):
-        # Размещает мины, гарантируя, что первая клетка не будет миной
+        # Размещает мины с гарантом
         mines_placed = 0
         while mines_placed < self.mines:
             x = random.randint(0, self.width - 1)
