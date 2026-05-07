@@ -1,9 +1,11 @@
 import pygame
 import random
 import sys
+import os
 
 # Инициализация Pygame
 pygame.init()
+pygame.mixer.init()
 
 # Константы
 TILE_SIZE = 32  # Размер клетки в пикселях
@@ -17,6 +19,8 @@ DIFFICULTY_LEVELS = {
     "Профессионал": {"width": 16, "height": 16, "mines": 40},
     "Эксперт": {"width": 20, "height": 16, "mines": 60}
 }
+
+
 
 # Цвета (RGB)
 COLORS = {
@@ -42,6 +46,11 @@ COLORS = {
         8: (128, 128, 128)   # Серый
     }
 }
+эта_папка = os.path.dirname(__file__)
+путь_к_сох = os.path.join(эта_папка, "sonido-original-xatlasfb.mp3")
+путь_к_со = os.path.join(эта_папка, "sonido-original.mp3")
+путь_к_сох2 = os.path.join(эта_папка, "sonido-original-xatlasfb (2).mp3")
+путь_к_сох4 = os.path.join(эта_папка, "sonido-original-xatlasfb (4).mp3")
 
 class Button:
     def __init__(self, x, y, width, height, text, font):
@@ -288,9 +297,13 @@ class Game:
     
     def change_difficulty(self, level_name):
         # Изменяет сложность игры
+        global путь_к_сох
         if level_name != self.current_difficulty:
             self.current_difficulty = level_name
             self.init_game()
+        if level_name == DIFFICULTY_LEVELS.get("Любитель"):
+            pygame.mixer.music.load(путь_к_сох)
+            pygame.mixer.music.play(loops=-1)
             
             # Обновляем активное состояние кнопок
             for btn_id, btn in self.buttons:
