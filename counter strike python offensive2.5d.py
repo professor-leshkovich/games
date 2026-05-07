@@ -730,22 +730,6 @@ class Game:
             self.map.generate_map()
             valid_map = len(self.map.ct_spawn) > 0 and len
 
-# Counter-Strike 2D - Улучшенная версия с случайной генерацией карт
-# Особенности:
-# 1. Случайная генерация карт
-# 2. Боты-террористы
-# 3. Разное оружие
-# 4. Покупка оружия
-# 5. Бомба и её установка
-# 6. Зоны для команд
-
-
-import pygame
-import sys
-import math
-import random
-from enum import Enum
-
 # Инициализация
 pygame.init()
 pygame.mixer.init()
@@ -1746,7 +1730,7 @@ class Game:
         surface.blit(weapon_name, (weapon_x - 10, weapon_y + 40))
         
     def draw_round_end_screen(self, surface):
-        """Отрисовка экрана окончания раунда"""
+        # Отрисовка экрана окончания раунда
         overlay = pygame.Surface((WIDTH, HEIGHT))
         overlay.fill((0, 0, 0))
         overlay.set_alpha(200)
@@ -1853,7 +1837,7 @@ class Game:
         return easy_rect, normal_rect, hard_rect
         
     def draw_buy_menu(self, surface):
-        """Отрисовка меню покупки"""
+        # Отрисовка меню покупки
         menu_surface = pygame.Surface((500, 400))
         menu_surface.fill((40, 40, 40))
         menu_surface.set_alpha(240)
