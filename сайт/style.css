@@ -1,0 +1,282 @@
+/* ==================== БАЗОВЫЕ НАСТРОЙКИ И КРАСНАЯ ТЕМА ==================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #2d0000 0%, #4a0000 50%, #1a0000 100%);
+    color: #ffe0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Декоративные фоновые элементы */
+body::before {
+    content: "";
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 40%, rgba(255, 60, 60, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(200, 0, 0, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.container {
+    max-width: 900px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    background: rgba(20, 0, 0, 0.7);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 2px solid #ff3333;
+    border-radius: 28px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 30px 60px rgba(255, 0, 0, 0.3), 0 0 0 1px rgba(255, 80, 80, 0.2) inset;
+    transition: all 0.3s ease;
+}
+
+/* ==================== ЗАГОЛОВОК ==================== */
+.header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    border-bottom: 3px solid #cc0000;
+    padding-bottom: 1.5rem;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(to right, #ff4444, #ff0000, #cc0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 25px rgba(255, 0, 0, 0.5);
+    filter: drop-shadow(0 4px 6px black);
+}
+
+.header .python-badge {
+    display: inline-block;
+    background: #b30000;
+    color: #ffe6e6;
+    padding: 0.4rem 1.8rem;
+    border-radius: 40px;
+    font-weight: bold;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    margin-top: 0.3rem;
+    border: 1px solid #ff6666;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+/* ==================== СЕКЦИЯ ФАЙЛОВ ==================== */
+.file-section {
+    background: rgba(40, 0, 0, 0.6);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 1px solid #b33b3b;
+    box-shadow: 0 10px 25px rgba(180, 0, 0, 0.4);
+}
+
+.file-list-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #ff8080;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+}
+
+.file-list-title::before {
+    content: "📁";
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 8px red);
+}
+
+/* Сетка файлов */
+.files-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.8rem;
+}
+
+/* Карточка одного файла */
+.file-item {
+    background: linear-gradient(90deg, #3d0a0a 0%, #1f0303 100%);
+    border: 1px solid #aa2222;
+    border-radius: 16px;
+    padding: 1rem 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.25s ease;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.file-item::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    background: #ff1a1a;
+    border-radius: 3px 0 0 3px;
+    box-shadow: 0 0 18px #ff0000;
+}
+
+.file-item:hover {
+    background: linear-gradient(90deg, #5c1212 0%, #2e0404 100%);
+    border-color: #ff4444;
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 12px 28px rgba(255, 0, 0, 0.5);
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.file-icon {
+    font-size: 2.2rem;
+    filter: drop-shadow(0 0 10px #ff5555);
+}
+
+.file-name {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: #ffcccc;
+    letter-spacing: 0.5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.file-name small {
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: #cc8888;
+    margin-top: 0.2rem;
+}
+
+.file-actions {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+/* Кнопка просмотра */
+.btn-view {
+    background: #cc0000;
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 0.5rem 1.2rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    letter-spacing: 0.8px;
+    transition: 0.2s;
+    box-shadow: 0 4px 12px rgba(200, 0, 0, 0.7);
+    border: 1px solid #ff6666;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-view:hover {
+    background: #ff1a1a;
+    box-shadow: 0 6px 20px red;
+    transform: scale(1.03);
+}
+
+/* ==================== ОБЛАСТЬ ПРОСМОТРА КОДА ==================== */
+.code-viewer {
+    margin-top: 1.2rem;
+    background: #0d0000;
+    border: 2px solid #b32424;
+    border-radius: 18px;
+    padding: 1.2rem;
+    max-height: 350px;
+    overflow-y: auto;
+    display: none;
+    position: relative;
+    box-shadow: inset 0 0 25px rgba(255, 0, 0, 0.3);
+}
+
+.code-viewer.active {
+    display: block;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ff8080;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    border-bottom: 1px dashed #8b0000;
+    padding-bottom: 0.5rem;
+}
+
+.close-viewer {
+    background: #550000;
+    border: 1px solid #ff4444;
+    color: #ffaaaa;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.2rem 0.8rem;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.close-viewer:hover {
+    background: #aa0000;
+    color: white;
+}
+
+pre {
+    background: #140101;
+    padding: 1rem;
+    border-radius: 14px;
+    color: #ffb3b3;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-left: 5px solid #e60000;
+    line-height: 1.5;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+/* Пустое сообщение */
+.empty-message {
+    text-align: center;
+    color: #cc6666;
+    font-style: italic;
+    padding: 2rem;
+}

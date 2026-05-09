@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои Python Файлы — Красный Каталог</title>
+    <!-- Подключаем CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐍 PyFiles Vault</h1>
+            <div class="python-badge">.py коллекция</div>
+        </div>
+
+        <div class="file-section">
+            <div class="file-list-title">
+                <span>Мои Python файлы</span>
+            </div>
+
+            <!-- Динамический контейнер для файлов -->
+            <div id="filesContainer" class="files-grid"></div>
+
+            <!-- Окно просмотра кода -->
+            <div id="codeViewer" class="code-viewer">
+                <div class="code-header">
+                    <span id="viewerFileName">📄 script.py</span>
+                    <button class="close-viewer" id="closeViewerBtn">&times;</button>
+                </div>
+                <pre id="codeContent"></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключаем JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
