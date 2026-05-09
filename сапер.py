@@ -12,6 +12,17 @@ TILE_SIZE = 32  # Размер клетки в пикселях
 MARGIN = 1      # Отступ между клетками
 INFO_PANEL_HEIGHT = 150  # Высота информационной панели с кнопками
 
+# Пути к музыкальным файлам для каждой сложности
+MUSIC_FILES = {
+    "Новичок": "games\осты\sonido-original-xatlasfb.mp3",
+    "Любитель": "games\осты\sonido-original-xatlasfb (4).mp3",
+    "Профессионал": "games\осты\sonido-original.mp3",
+    "Эксперт": "games\осты\sonido-original-xatlasfb (2).mp3"
+}
+
+# Громкость музыки (от 0.0 до 1.0)
+MUSIC_VOLUME = 0.5
+
 # Предустановленные уровни сложности
 DIFFICULTY_LEVELS = {
     "Новичок": {"width": 8, "height": 8, "mines": 10},
@@ -19,8 +30,6 @@ DIFFICULTY_LEVELS = {
     "Профессионал": {"width": 16, "height": 16, "mines": 40},
     "Эксперт": {"width": 20, "height": 16, "mines": 60}
 }
-
-
 
 # Цвета (RGB)
 COLORS = {
@@ -46,11 +55,6 @@ COLORS = {
         8: (128, 128, 128)   # Серый
     }
 }
-эта_папка = os.path.dirname(__file__)
-путь_к_сох = os.path.join(эта_папка, "sonido-original-xatlasfb.mp3")
-путь_к_со = os.path.join(эта_папка, "sonido-original.mp3")
-путь_к_сох2 = os.path.join(эта_папка, "sonido-original-xatlasfb (2).mp3")
-путь_к_сох4 = os.path.join(эта_папка, "sonido-original-xatlasfb (4).mp3")
 
 class Button:
     def __init__(self, x, y, width, height, text, font):
@@ -83,6 +87,67 @@ class Button:
             self.is_active = False
         return False
 
+class MusicManager:
+    """Класс для управления музыкой"""
+    def __init__(self):
+        self.current_track = None
+        self.is_paused = False
+        self.volume = MUSIC_VOLUME
+        pygame.mixer.music.set_volume(self.volume)
+    
+    def play_track(self, music_file):
+        """Воспроизводит указанный музыкальный файл"""
+        if music_file and os.path.exists(music_file):
+            try:
+                pygame.mixer.music.load(music_file)
+                pygame.mixer.music.play(-1)  # Бесконечное повторение
+                self.current_track = music_file
+                self.is_paused = False
+                print(f"Играет музыка: {os.path.basename(music_file)}")
+            except pygame.error as e:
+                print(f"Ошибка при загрузке музыки {music_file}: {e}")
+                self.current_track = None
+        else:
+            print(f"Музыкальный файл не найден: {music_file}")
+            pygame.mixer.music.stop()
+            self.current_track = None
+    
+    def toggle_pause(self):
+        """Переключает паузу музыки"""
+        if pygame.mixer.music.get_busy():
+            if self.is_paused:
+                pygame.mixer.music.unpause()
+                self.is_paused = False
+                print("Музыка возобновлена")
+            else:
+                pygame.mixer.music.pause()
+                self.is_paused = True
+                print("Музыка на паузе")
+    
+    def increase_volume(self):
+        """Увеличивает громкость"""
+        self.volume = min(1.0, self.volume + 0.1)
+        pygame.mixer.music.set_volume(self.volume)
+        print(f"Громкость: {self.volume:.1f}")
+    
+    def decrease_volume(self):
+        """Уменьшает громкость"""
+        self.volume = max(0.0, self.volume - 0.1)
+        pygame.mixer.music.set_volume(self.volume)
+        print(f"Громкость: {self.volume:.1f}")
+    
+    def stop(self):
+        """Останавливает музыку"""
+        pygame.mixer.music.stop()
+        self.current_track = None
+        self.is_paused = False
+    
+    def get_current_track_name(self):
+        """Возвращает имя текущего трека"""
+        if self.current_track:
+            return os.path.basename(self.current_track)
+        return "Нет трека"
+
 class Minesweeper:
     def __init__(self, width, height, mines):
         self.width = width
@@ -94,6 +159,7 @@ class Minesweeper:
         self.game_over = False
         self.won = False
         self.first_move = True
+        self.moves_count = 0
         
         # Инициализация массивов
         self.reset()
@@ -106,6 +172,7 @@ class Minesweeper:
         self.game_over = False
         self.won = False
         self.first_move = True
+        self.moves_count = 0
         
         for i in range(self.height):
             self.board.append([0] * self.width)
@@ -113,14 +180,14 @@ class Minesweeper:
             self.flags.append([False] * self.width)
     
     def place_mines(self, first_x, first_y):
-        # Размещает мины с гарантом
+        # Размещает мины с гарантией
         mines_placed = 0
         while mines_placed < self.mines:
             x = random.randint(0, self.width - 1)
             y = random.randint(0, self.height - 1)
             
-            # Не размещаем мину на первой открытой клетке
-            if (x == first_x and y == first_y):
+            # Не размещаем мину на первой открытой клетке и соседних
+            if abs(x - first_x) <= 1 and abs(y - first_y) <= 1:
                 continue
                 
             if self.board[y][x] != -1:
@@ -162,6 +229,8 @@ class Minesweeper:
         if self.first_move:
             self.first_move = False
             self.place_mines(x, y)
+        
+        self.moves_count += 1
         
         # Если наступили на мину
         if self.board[y][x] == -1:
@@ -211,17 +280,47 @@ class Minesweeper:
     
     def check_win(self):
         # Проверяет, выиграл ли игрок
+        # Проверяем, что все клетки без мин открыты
+        all_safe_revealed = True
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board[y][x] != -1 and not self.revealed[y][x]:
+                    all_safe_revealed = False
+                    break
+            if not all_safe_revealed:
+                break
+        
+        if all_safe_revealed:
+            self.won = True
+            self.game_over = True
+            # Автоматически ставим флажки на все мины
+            for y in range(self.height):
+                for x in range(self.width):
+                    if self.board[y][x] == -1:
+                        self.flags[y][x] = True
+            return True
+        
+        # Также проверяем правильную расстановку флажков
         flagged_mines = 0
+        correct_flags = True
         for y in range(self.height):
             for x in range(self.width):
                 if self.board[y][x] == -1 and self.flags[y][x]:
                     flagged_mines += 1
+                if self.board[y][x] != -1 and self.flags[y][x]:
+                    correct_flags = False
         
-        if flagged_mines == self.mines:
+        if flagged_mines == self.mines and correct_flags:
             self.won = True
             self.game_over = True
             return True
+        
         return False
+    
+    def get_remaining_mines(self):
+        """Возвращает количество оставшихся мин (с учетом флажков)"""
+        flags_placed = sum(sum(row) for row in self.flags)
+        return self.mines - flags_placed
 
 class Game:
     def __init__(self):
@@ -241,9 +340,15 @@ class Game:
         self.font = pygame.font.Font(None, 36)
         self.small_font = pygame.font.Font(None, 24)
         
+        # Инициализация менеджера музыки
+        self.music_manager = MusicManager()
+        
         # Инициализация игры
         self.init_game()
         self.create_buttons()
+        
+        # Запуск музыки для начальной сложности
+        self.play_difficulty_music()
     
     def init_game(self):
         # Инициализирует игровое поле
@@ -295,15 +400,16 @@ class Game:
                 btn.is_active = True
             self.buttons.append((level_name, btn))
     
+    def play_difficulty_music(self):
+        """Воспроизводит музыку для текущей сложности"""
+        music_file = MUSIC_FILES[self.current_difficulty]
+        self.music_manager.play_track(music_file)
+    
     def change_difficulty(self, level_name):
         # Изменяет сложность игры
-        global путь_к_сох
         if level_name != self.current_difficulty:
             self.current_difficulty = level_name
             self.init_game()
-        if level_name == DIFFICULTY_LEVELS.get("Любитель"):
-            pygame.mixer.music.load(путь_к_сох)
-            pygame.mixer.music.play(loops=-1)
             
             # Обновляем активное состояние кнопок
             for btn_id, btn in self.buttons:
@@ -311,6 +417,9 @@ class Game:
                     btn.is_active = (btn_id == level_name)
             
             self.scroll_y = 0  # Сбрасываем прокрутку
+            
+            # Меняем музыку при смене сложности
+            self.play_difficulty_music()
     
     def draw_board(self):
         # Отрисовывает игровое поле с учетом прокрутки
@@ -363,25 +472,39 @@ class Game:
                         (self.window_width, self.window_height - INFO_PANEL_HEIGHT), 3)
         
         # Отображаем количество мин
-        mines_text = self.font.render(f"Мины: {self.game.mines}", True, COLORS['BORDER'])
+        remaining_mines = self.game.get_remaining_mines()
+        mines_text = self.font.render(f"Мины: {remaining_mines}/{self.game.mines}", True, COLORS['BORDER'])
         self.screen.blit(mines_text, (20, self.window_height - INFO_PANEL_HEIGHT + 10))
         
-        # Отображаем количество флажков
-        flags_used = sum(sum(row) for row in self.game.flags)
-        flags_text = self.font.render(f"Флажки: {flags_used}", True, COLORS['BORDER'])
-        self.screen.blit(flags_text, (self.window_width - 150, self.window_height - INFO_PANEL_HEIGHT + 10))
+        # Отображаем количество ходов
+        moves_text = self.small_font.render(f"Ходы: {self.game.moves_count}", True, COLORS['BORDER'])
+        self.screen.blit(moves_text, (20, self.window_height - INFO_PANEL_HEIGHT + 90))
         
         # Отображаем статус игры
         if self.game.game_over:
             if self.game.won:
                 status = "ПОБЕДА!"
-                color = (0, 255, 0)
+                color = (0, 180, 0)
             else:
                 status = "ПРОИГРЫШ!"
-                color = (255, 0, 0)
+                color = (200, 0, 0)
             status_text = self.font.render(status, True, color)
             text_rect = status_text.get_rect(center=(self.window_width // 2, self.window_height - INFO_PANEL_HEIGHT + 30))
             self.screen.blit(status_text, text_rect)
+        
+        # Отображаем информацию о музыке
+        music_status = "🔊" if not self.music_manager.is_paused else "🔇"
+        track_name = self.music_manager.get_current_track_name()
+        music_text = self.small_font.render(f"{music_status} {track_name}", True, COLORS['BORDER'])
+        music_text_rect = music_text.get_rect(right=self.window_width - 20, 
+                                             centery=self.window_height - INFO_PANEL_HEIGHT + 45)
+        self.screen.blit(music_text, music_text_rect)
+        
+        # Отображаем подсказки по управлению музыкой
+        hints_text = self.small_font.render("M-пауза ↑↓-громкость", True, (100, 100, 100))
+        hints_rect = hints_text.get_rect(right=self.window_width - 20, 
+                                        centery=self.window_height - INFO_PANEL_HEIGHT + 70)
+        self.screen.blit(hints_text, hints_rect)
         
         # Рисуем полосу прокрутки, если нужно
         if self.board_height > self.scroll_area.height:
@@ -431,6 +554,15 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
                 
+                # Управление музыкой с клавиатуры
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_m:  # Клавиша M - вкл/выкл музыку
+                        self.music_manager.toggle_pause()
+                    elif event.key == pygame.K_UP:  # Увеличить громкость
+                        self.music_manager.increase_volume()
+                    elif event.key == pygame.K_DOWN:  # Уменьшить громкость
+                        self.music_manager.decrease_volume()
+                
                 # Прокрутка колесиком мыши
                 if event.type == pygame.MOUSEWHEEL:
                     if self.board_height > self.scroll_area.height:
@@ -463,6 +595,9 @@ class Game:
                     if btn.handle_event(event):
                         if btn_id == "new_game":
                             self.game.reset()
+                            # Перезапускаем музыку при новой игре
+                            if not self.music_manager.is_paused:
+                                self.play_difficulty_music()
                         elif btn_id in DIFFICULTY_LEVELS:
                             self.change_difficulty(btn_id)
                 
@@ -484,9 +619,20 @@ class Game:
             pygame.display.flip()
             self.clock.tick(60)
         
+        # Останавливаем музыку перед выходом
+        self.music_manager.stop()
         pygame.quit()
         sys.exit()
 
 if __name__ == "__main__":
+    # Проверка наличия музыкальных файлов
+    print("Проверка музыкальных файлов:")
+    for difficulty, filename in MUSIC_FILES.items():
+        if os.path.exists(filename):
+            print(f"✓ {difficulty}: {filename} найден")
+        else:
+            print(f"✗ {difficulty}: {filename} не найден")
+    print("\nЗапуск игры...")
+    
     game = Game()
     game.run()
