@@ -14,10 +14,10 @@ INFO_PANEL_HEIGHT = 150  # Высота информационной панел�
 
 # Пути к музыкальным файлам для каждой сложности
 MUSIC_FILES = {
-    "Новичок": "games\осты\sonido-original-xatlasfb.mp3",
-    "Любитель": "games\осты\sonido-original-xatlasfb (4).mp3",
-    "Профессионал": "games\осты\sonido-original.mp3",
-    "Эксперт": "games\осты\sonido-original-xatlasfb (2).mp3"
+    "Новичок": "games\осты\chumbucket kitty.mp3",
+    "Любитель": "games\осты\lonesome road.mp3",
+    "Профессионал": "games\осты\;alone in the dark.mp3",
+    "Эксперт": "games\осты\;trobbing king.mp3"
 }
 
 # Громкость музыки (от 0.0 до 1.0)
